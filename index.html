@@ -3,28 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame</title>
+    <title>Minigame Mon Van Hoa</title>
     <!-- Thư viện tạo hiệu ứng Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Đảm bảo mọi viền/padding không làm phình to kích thước */
         * {
             box-sizing: border-box;
         }
 
-        /* Tùy chỉnh chủ đề Tết & Căn giữa toàn màn hình */
+        /* Nền Gấm đỏ đậm phong cách hoàng gia */
         body {
             background-color: #a71d2a;
+            /* Họa tiết gấm chìm truyền thống */
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5H0V11h20V8.5H0V6h20V3.5H0V1h20V0h2v1h20v2.5H22V6h20v2.5H22V11h20v2.5H22V16h20v2H22v2.5h20V23h-20v2.5h20V28h-20v2.5h20V33h-20v2.5h20V38h-20v2H20v-2H0v-2.5h20V33H0v-2.5h20V28H0v-2.5h20V23H0v-2.5h20z' fill='%23901622' fill-opacity='0.5' fill-rule='evenodd'/%3E%3C/svg%3E");
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 10px 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Căn giữa theo chiều dọc */
-            align-items: center;     /* Căn giữa theo chiều ngang */
+            justify-content: center; 
+            align-items: center;     
             min-height: 100vh;
-            overflow: hidden;        /* Chống cuộn màn hình, chống tràn chữ */
+            overflow: hidden;        
+        }
+
+        /* KHUNG VIỀN VÀNG RỒNG PHƯỢNG (ROYAL FRAME) */
+        .royal-frame {
+            position: fixed;
+            top: 15px; left: 15px; right: 15px; bottom: 15px;
+            border: 3px solid #f1c40f;
+            outline: 2px solid #f1c40f;
+            outline-offset: -8px;
+            pointer-events: none; /* Rất quan trọng: Không chặn click chuột vào game */
+            z-index: 998;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.4), 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* 4 Góc trang trí (Chỗ hiển thị rongphuong.png) */
+        .corner {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-image: url('rongphuong.png'); /* Sẵn sàng nhận file rongphuong.png của bạn */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: top left;
+            z-index: 999;
+        }
+
+        /* Định vị & Lật đối xứng 4 góc */
+        .corner.tl { top: -5px; left: -5px; }
+        .corner.tr { top: -5px; right: -5px; transform: scaleX(-1); }
+        .corner.bl { bottom: -5px; left: -5px; transform: scaleY(-1); }
+        .corner.br { bottom: -5px; right: -5px; transform: scale(-1, -1); }
+
+        /* Họa tiết góc mạ vàng bằng CSS (Hiển thị mượt mà kể cả khi chưa có ảnh rồng) */
+        .corner::before, .corner::after {
+            content: '';
+            position: absolute;
+            border-top: 5px solid #f1c40f;
+            border-left: 5px solid #f1c40f;
+            box-shadow: -2px -2px 6px rgba(0,0,0,0.4);
+        }
+        .corner::before {
+            top: 0; left: 0;
+            width: 80px; height: 80px;
+        }
+        .corner::after {
+            top: 15px; left: 15px;
+            width: 40px; height: 40px;
         }
 
         /* Màn hình khởi động để yêu cầu Fullscreen */
@@ -32,7 +80,7 @@
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #a71d2a;
-            z-index: 9999;
+            z-index: 10000; /* Che toàn bộ viền */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -68,23 +116,25 @@
         h1.game-title {
             color: #f1c40f;
             text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-size: 2.4rem; /* Giảm nhẹ để vừa màn hình */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            font-size: 2.4rem; 
             margin-top: 0;
             margin-bottom: 25px;
             letter-spacing: 2px;
             text-align: center;
+            z-index: 10;
         }
 
         .game-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 40px; /* Căn chỉnh khoảng cách vừa đủ */
+            gap: 40px; 
             justify-content: center;
             align-items: stretch;
             max-width: 1200px; 
             width: 100%;
             margin: 0 auto;
+            z-index: 10;
         }
 
         /* Bảng ô chữ */
@@ -96,7 +146,7 @@
 
         .row {
             display: grid;
-            grid-template-columns: repeat(10, 52px); /* Tỉ lệ vàng: ô 52px */
+            grid-template-columns: repeat(10, 52px); 
             gap: 6px; 
             cursor: pointer;
             transition: transform 0.2s;
@@ -120,7 +170,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 28px; /* Chữ nằm trọn trong ô */
+            font-size: 28px; 
             font-weight: bold;
             color: transparent;
             text-transform: uppercase;
@@ -129,7 +179,7 @@
         }
 
         .cell.highlight {
-            background-color: rgba(241, 196, 15, 0.3);
+            background-color: rgba(241, 196, 15, 0.4);
             border-color: #ff9f43;
         }
 
@@ -165,7 +215,7 @@
             display: flex;
             flex: 1;
             min-width: 320px; 
-            max-width: 450px; /* Giới hạn độ phình của ảnh */
+            max-width: 450px; 
         }
 
         .image-container img {
@@ -181,7 +231,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center;
             align-items: center;
@@ -198,6 +248,8 @@
             text-align: center;
             border: 6px solid #a71d2a;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            /* Thêm họa tiết gấm nhạt vào bảng câu hỏi cho sang */
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5H0V11h20V8.5H0V6h20V3.5H0V1h20V0h2v1h20v2.5H22V6h20v2.5H22V11h20v2.5H22V16h20v2H22v2.5h20V23h-20v2.5h20V28h-20v2.5h20V33h-20v2.5h20V38h-20v2H20v-2H0v-2.5h20V33H0v-2.5h20V28H0v-2.5h20V23H0v-2.5h20z' fill='%23a71d2a' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
         .modal h2 {
@@ -264,6 +316,7 @@
         footer {
             margin-top: 35px;
             text-align: center;
+            z-index: 10;
         }
 
         .developer-link {
@@ -292,11 +345,19 @@
 
     <!-- Màn hình chờ bắt buộc để kích hoạt Fullscreen -->
     <div id="startScreen">
-        <h1>MINIGAME</h1>
+        <h1>MINIGAME MÔN VĂN HÓA</h1>
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
-    <h1 class="game-title">Minigame</h1>
+    <!-- Lớp viền mạ vàng & 4 góc Rồng Phượng -->
+    <div class="royal-frame">
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+    </div>
+
+    <h1 class="game-title">Minigame Mon Van Hoa</h1>
 
     <div class="game-container">
         <!-- Khu vực bảng chữ -->
@@ -350,7 +411,6 @@
         let currentRow = -1;
         const TARGET_COL = 5;
 
-        // Xử lý nút bắt đầu và phóng to toàn màn hình
         document.getElementById("startBtn").addEventListener("click", function() {
             const elem = document.documentElement;
             if (elem.requestFullscreen) {
