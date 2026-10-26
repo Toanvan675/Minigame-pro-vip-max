@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minigame Mon Van Hoa</title>
+    <!-- Thư viện tạo hiệu ứng Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* Tùy chỉnh chủ đề Tết */
         body {
@@ -56,6 +58,12 @@
             transform: scale(1.02);
         }
 
+        /* Vô hiệu hóa hàng đã trả lời đúng để không bấm lại được */
+        .row.solved {
+            cursor: default;
+            pointer-events: none;
+        }
+
         .cell {
             width: 45px;
             height: 45px;
@@ -69,7 +77,7 @@
             font-weight: bold;
             color: transparent;
             text-transform: uppercase;
-            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
             box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
@@ -90,6 +98,22 @@
             color: #fff !important;
         }
 
+        /* Hiệu ứng khi chiến thắng cho cột dọc MAMNGUQUA */
+        .cell.win-glow {
+            background-color: #f1c40f !important; /* Đổi thành nền vàng */
+            color: #a71d2a !important; /* Chữ đỏ thẫm */
+            border-color: #fff !important; /* Viền trắng sáng */
+            box-shadow: 0 0 20px 8px rgba(241, 196, 15, 0.9) !important; /* Viền vàng glow sáng */
+            z-index: 10;
+            position: relative; /* Cần position để z-index hoạt động đè lên ô khác */
+            animation: winPulse 1s infinite alternate;
+        }
+
+        @keyframes winPulse {
+            from { box-shadow: 0 0 15px 5px rgba(241, 196, 15, 0.8) !important; }
+            to { box-shadow: 0 0 30px 12px rgba(241, 196, 15, 1) !important; }
+        }
+
         /* Cột chứa ảnh */
         .image-container {
             display: flex;
@@ -97,7 +121,6 @@
             min-width: 300px;
         }
 
-        /* Ảnh bên cạnh */
         .image-container img {
             width: 100%;
             height: 100%;
@@ -208,7 +231,6 @@
             transition: transform 0.2s;
         }
 
-        /* Hiệu ứng nháy xanh khi di chuột (Hover) */
         .developer-link:hover {
             transform: scale(1.08);
             animation: flashGreen 0.5s infinite alternate;
@@ -229,7 +251,7 @@
 </head>
 <body>
 
-    <h1>Minigame Môn Văn Hóa Việt Nam</h1>
+    <h1>Minigame Mon Van Hoa</h1>
 
     <div class="game-container">
         <!-- Khu vực bảng chữ -->
@@ -279,6 +301,8 @@
             { q: "9. The place in the house where the tray is displayed to honor ancestors.", a: "altar", offset: 5 },
         ];
 
+        // Mảng để theo dõi tiến độ giải đố (False = chưa giải, True = đã giải đúng)
+        let isSolved = new Array(gameData.length).fill(false);
         let currentRow = -1;
         const TARGET_COL = 5;
 
@@ -288,6 +312,7 @@
             gameData.forEach((item, rowIndex) => {
                 const rowDiv = document.createElement("div");
                 rowDiv.className = "row";
+                rowDiv.id = `row-${rowIndex}`;
                 rowDiv.dataset.row = rowIndex;
                 rowDiv.onclick = () => openModal(rowIndex);
 
@@ -311,6 +336,9 @@
         }
 
         function openModal(rowIndex) {
+            // Nếu hàng này đã trả lời đúng thì bỏ qua, không mở câu hỏi nữa
+            if (isSolved[rowIndex]) return; 
+
             currentRow = rowIndex;
             document.getElementById("questionText").innerText = gameData[rowIndex].q;
             const input = document.getElementById("answerInput");
@@ -337,13 +365,20 @@
         function checkAnswer() {
             const userInput = document.getElementById("answerInput").value.trim().toLowerCase();
             const correctAnswer = gameData[currentRow].a.toLowerCase();
-            const cells = document.querySelectorAll(`.row[data-row="${currentRow}"] .cell`);
+            const rowElement = document.getElementById(`row-${currentRow}`);
+            const cells = rowElement.querySelectorAll('.cell');
             
             closeModal();
 
             if (userInput === correctAnswer) {
+                // ĐÁP ÁN ĐÚNG
                 document.getElementById("audioDung").play();
                 
+                // Đánh dấu là đã giải xong
+                isSolved[currentRow] = true;
+                rowElement.classList.add("solved"); // Thêm class để CSS chặn click
+
+                // Hiệu ứng lật chữ từng ô
                 cells.forEach((cell, index) => {
                     setTimeout(() => {
                         cell.innerText = correctAnswer[index];
@@ -351,7 +386,16 @@
                         cell.classList.add("correct");
                     }, index * 200);
                 });
+
+                // Kiểm tra xem đã giải đúng HẾT toàn bộ bảng chưa
+                if (isSolved.every(status => status === true)) {
+                    // Chờ chữ của hàng cuối cùng lật xong thì kích hoạt hiệu ứng chiến thắng
+                    const timeToWait = correctAnswer.length * 200 + 500;
+                    setTimeout(triggerWin, timeToWait);
+                }
+
             } else {
+                // ĐÁP ÁN SAI
                 document.getElementById("audioSai").play();
                 showToast("CÂU TRẢ LỜI SAI!");
                 
@@ -376,6 +420,43 @@
                     });
                 }, fadeDelay);
             }
+        }
+
+        // Hàm hiệu ứng Chiến Thắng (Hoàn thành toàn bộ game)
+        function triggerWin() {
+            // 1. Pháo giấy tung tóe nhiều đợt
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#f1c40f', '#a71d2a', '#2ecc71']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#f1c40f', '#a71d2a', '#2ecc71']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // 2. Cột MAMNGUQUA biến màu vàng và tỏa sáng glow
+            const highlightCells = document.querySelectorAll('.cell[data-highlight="true"]');
+            highlightCells.forEach((cell, i) => {
+                // Tỏa sáng lần lượt từ trên xuống cho đẹp
+                setTimeout(() => {
+                    cell.classList.add("win-glow");
+                }, i * 150); 
+            });
         }
 
         window.onload = initBoard;
