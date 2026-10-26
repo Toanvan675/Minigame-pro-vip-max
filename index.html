@@ -7,78 +7,125 @@
     <!-- Thư viện tạo hiệu ứng Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Tùy chỉnh chủ đề Tết */
+        /* Đảm bảo mọi viền/padding không làm phình to kích thước */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Tùy chỉnh chủ đề Tết & Căn giữa toàn màn hình */
         body {
             background-color: #a71d2a;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center;     /* Căn giữa theo chiều ngang */
             min-height: 100vh;
+            overflow: hidden;        /* Chống cuộn màn hình, chống tràn chữ */
         }
 
-        h1 {
+        /* Màn hình khởi động để yêu cầu Fullscreen */
+        #startScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #a71d2a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #startScreen h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        #startBtn {
+            padding: 20px 50px;
+            font-size: 1.8rem;
+            background: #f1c40f;
+            color: #a71d2a;
+            border: 4px solid #fff;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s, background 0.2s;
+            text-transform: uppercase;
+        }
+
+        #startBtn:hover {
+            transform: scale(1.05);
+            background: #e1b70d;
+        }
+
+        h1.game-title {
             color: #f1c40f;
             text-transform: uppercase;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-size: 2.5rem;
-            margin-bottom: 40px;
+            font-size: 2.4rem; /* Giảm nhẹ để vừa màn hình */
+            margin-top: 0;
+            margin-bottom: 25px;
             letter-spacing: 2px;
+            text-align: center;
         }
 
         .game-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 50px;
+            gap: 40px; /* Căn chỉnh khoảng cách vừa đủ */
             justify-content: center;
             align-items: stretch;
-            max-width: 1100px;
+            max-width: 1200px; 
             width: 100%;
+            margin: 0 auto;
         }
 
         /* Bảng ô chữ */
         .board {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 6px; 
         }
 
         .row {
             display: grid;
-            grid-template-columns: repeat(10, 45px);
-            gap: 6px;
+            grid-template-columns: repeat(10, 52px); /* Tỉ lệ vàng: ô 52px */
+            gap: 6px; 
             cursor: pointer;
             transition: transform 0.2s;
         }
         
         .row:hover {
-            transform: scale(1.02);
+            transform: scale(1.03); 
         }
 
-        /* Vô hiệu hóa hàng đã trả lời đúng để không bấm lại được */
         .row.solved {
             cursor: default;
             pointer-events: none;
         }
 
         .cell {
-            width: 45px;
-            height: 45px;
+            width: 52px; 
+            height: 52px; 
             background-color: rgba(255, 255, 255, 0.1);
             border: 2px solid #f1c40f;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 28px; /* Chữ nằm trọn trong ô */
             font-weight: bold;
             color: transparent;
             text-transform: uppercase;
             transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
 
         .cell.highlight {
@@ -98,27 +145,27 @@
             color: #fff !important;
         }
 
-        /* Hiệu ứng khi chiến thắng cho cột dọc MAMNGUQUA */
         .cell.win-glow {
-            background-color: #f1c40f !important; /* Đổi thành nền vàng */
-            color: #a71d2a !important; /* Chữ đỏ thẫm */
-            border-color: #fff !important; /* Viền trắng sáng */
-            box-shadow: 0 0 20px 8px rgba(241, 196, 15, 0.9) !important; /* Viền vàng glow sáng */
+            background-color: #f1c40f !important;
+            color: #a71d2a !important;
+            border-color: #fff !important;
+            box-shadow: 0 0 20px 8px rgba(241, 196, 15, 0.9) !important;
             z-index: 10;
-            position: relative; /* Cần position để z-index hoạt động đè lên ô khác */
+            position: relative;
             animation: winPulse 1s infinite alternate;
         }
 
         @keyframes winPulse {
             from { box-shadow: 0 0 15px 5px rgba(241, 196, 15, 0.8) !important; }
-            to { box-shadow: 0 0 30px 12px rgba(241, 196, 15, 1) !important; }
+            to { box-shadow: 0 0 30px 10px rgba(241, 196, 15, 1) !important; }
         }
 
         /* Cột chứa ảnh */
         .image-container {
             display: flex;
             flex: 1;
-            min-width: 300px;
+            min-width: 320px; 
+            max-width: 450px; /* Giới hạn độ phình của ảnh */
         }
 
         .image-container img {
@@ -127,7 +174,7 @@
             object-fit: cover;
             border: none;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
 
         /* Modal hiển thị câu hỏi */
@@ -144,28 +191,28 @@
         .modal {
             background: #fff;
             color: #333;
-            padding: 30px;
+            padding: 30px; 
             border-radius: 15px;
             width: 90%;
-            max-width: 500px;
+            max-width: 550px; 
             text-align: center;
-            border: 5px solid #a71d2a;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 6px solid #a71d2a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
 
         .modal h2 {
             margin-top: 0;
             color: #a71d2a;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             line-height: 1.5;
         }
 
         .modal input {
-            width: 80%;
+            width: 90%;
             padding: 12px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin: 20px 0;
-            border: 2px solid #ccc;
+            border: 3px solid #ccc;
             border-radius: 8px;
             text-align: center;
             text-transform: uppercase;
@@ -180,8 +227,8 @@
             background: #f1c40f;
             color: #a71d2a;
             border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
+            padding: 12px 35px;
+            font-size: 1.2rem;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
@@ -195,12 +242,12 @@
         .close-btn {
             background: #ccc !important;
             color: #333 !important;
-            margin-left: 10px;
+            margin-left: 15px;
         }
 
         #toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             background: #e74c3c;
@@ -208,16 +255,14 @@
             padding: 15px 30px;
             border-radius: 30px;
             font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 1.3rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
             display: none;
             z-index: 1001;
         }
 
-        /* Style cho Developer Credit */
         footer {
-            margin-top: 50px;
-            margin-bottom: 20px;
+            margin-top: 35px;
             text-align: center;
         }
 
@@ -226,32 +271,32 @@
             font-size: 1.2rem;
             font-weight: bold;
             text-decoration: none;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             display: inline-block;
             transition: transform 0.2s;
         }
 
         .developer-link:hover {
-            transform: scale(1.08);
+            transform: scale(1.1);
             animation: flashGreen 0.5s infinite alternate;
         }
 
         @keyframes flashGreen {
-            0% {
-                color: #2ecc71;
-                text-shadow: 0 0 8px #2ecc71, 0 0 15px #2ecc71;
-            }
-            100% {
-                color: #a8ffb2;
-                text-shadow: 0 0 18px #2ecc71, 0 0 30px #2ecc71;
-            }
+            0% { color: #2ecc71; text-shadow: 0 0 10px #2ecc71, 0 0 20px #2ecc71; }
+            100% { color: #a8ffb2; text-shadow: 0 0 25px #2ecc71, 0 0 40px #2ecc71; }
         }
 
     </style>
 </head>
 <body>
 
-    <h1>Minigame Mon Van Hoa</h1>
+    <!-- Màn hình chờ bắt buộc để kích hoạt Fullscreen -->
+    <div id="startScreen">
+        <h1>MINIGAME MÔN VĂN HÓA</h1>
+        <button id="startBtn">Bắt Đầu Chơi</button>
+    </div>
+
+    <h1 class="game-title">Minigame Mon Van Hoa</h1>
 
     <div class="game-container">
         <!-- Khu vực bảng chữ -->
@@ -259,7 +304,7 @@
 
         <!-- Khu vực ảnh minh họa -->
         <div class="image-container">
-            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/400x500.png?text=Loi+anh+mamnguqua.jpg'">
+            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/500x600.png?text=Loi+anh+mamnguqua.jpg'">
         </div>
     </div>
 
@@ -301,10 +346,22 @@
             { q: "9. The place in the house where the tray is displayed to honor ancestors.", a: "altar", offset: 5 },
         ];
 
-        // Mảng để theo dõi tiến độ giải đố (False = chưa giải, True = đã giải đúng)
         let isSolved = new Array(gameData.length).fill(false);
         let currentRow = -1;
         const TARGET_COL = 5;
+
+        // Xử lý nút bắt đầu và phóng to toàn màn hình
+        document.getElementById("startBtn").addEventListener("click", function() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { 
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { 
+                elem.msRequestFullscreen();
+            }
+            document.getElementById("startScreen").style.display = "none";
+        });
 
         function initBoard() {
             const board = document.getElementById("board");
@@ -336,7 +393,6 @@
         }
 
         function openModal(rowIndex) {
-            // Nếu hàng này đã trả lời đúng thì bỏ qua, không mở câu hỏi nữa
             if (isSolved[rowIndex]) return; 
 
             currentRow = rowIndex;
@@ -371,14 +427,11 @@
             closeModal();
 
             if (userInput === correctAnswer) {
-                // ĐÁP ÁN ĐÚNG
                 document.getElementById("audioDung").play();
                 
-                // Đánh dấu là đã giải xong
                 isSolved[currentRow] = true;
-                rowElement.classList.add("solved"); // Thêm class để CSS chặn click
+                rowElement.classList.add("solved");
 
-                // Hiệu ứng lật chữ từng ô
                 cells.forEach((cell, index) => {
                     setTimeout(() => {
                         cell.innerText = correctAnswer[index];
@@ -387,15 +440,12 @@
                     }, index * 200);
                 });
 
-                // Kiểm tra xem đã giải đúng HẾT toàn bộ bảng chưa
                 if (isSolved.every(status => status === true)) {
-                    // Chờ chữ của hàng cuối cùng lật xong thì kích hoạt hiệu ứng chiến thắng
                     const timeToWait = correctAnswer.length * 200 + 500;
                     setTimeout(triggerWin, timeToWait);
                 }
 
             } else {
-                // ĐÁP ÁN SAI
                 document.getElementById("audioSai").play();
                 showToast("CÂU TRẢ LỜI SAI!");
                 
@@ -422,24 +472,22 @@
             }
         }
 
-        // Hàm hiệu ứng Chiến Thắng (Hoàn thành toàn bộ game)
         function triggerWin() {
-            // 1. Pháo giấy tung tóe nhiều đợt
             var duration = 3 * 1000;
             var end = Date.now() + duration;
 
             (function frame() {
                 confetti({
-                    particleCount: 5,
+                    particleCount: 8,
                     angle: 60,
-                    spread: 55,
+                    spread: 60,
                     origin: { x: 0 },
                     colors: ['#f1c40f', '#a71d2a', '#2ecc71']
                 });
                 confetti({
-                    particleCount: 5,
+                    particleCount: 8,
                     angle: 120,
-                    spread: 55,
+                    spread: 60,
                     origin: { x: 1 },
                     colors: ['#f1c40f', '#a71d2a', '#2ecc71']
                 });
@@ -449,10 +497,8 @@
                 }
             }());
 
-            // 2. Cột MAMNGUQUA biến màu vàng và tỏa sáng glow
             const highlightCells = document.querySelectorAll('.cell[data-highlight="true"]');
             highlightCells.forEach((cell, i) => {
-                // Tỏa sáng lần lượt từ trên xuống cho đẹp
                 setTimeout(() => {
                     cell.classList.add("win-glow");
                 }, i * 150); 
