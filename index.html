@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame</title>
+    <title>Minigame Mon Van Hoa</title>
     <!-- Thư viện tạo hiệu ứng Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Import font chữ viết tay Dancing Script từ Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -88,10 +90,12 @@
         }
 
         #startScreen h1 {
-            font-size: 3.5rem;
+            font-family: 'Dancing Script', cursive; /* Đổi sang font viết tay */
+            font-size: clamp(4rem, 10vw, 8rem); /* Font to linh hoạt không tràn viền */
             margin-bottom: 30px;
             text-align: center;
             padding: 0 20px;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.5);
         }
 
         #startBtn {
@@ -114,15 +118,17 @@
         }
 
         h1.game-title {
+            font-family: 'Dancing Script', cursive; /* Đổi sang font viết tay */
             color: #f1c40f;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-            font-size: 2.4rem; 
-            margin-top: 0;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
+            /* Tăng kích thước lên ~300% (từ 2.4rem lên max 7.5rem) bằng clamp để không rớt khỏi border */
+            font-size: clamp(4rem, 8vw, 7.5rem); 
+            margin-top: 10px;
             margin-bottom: 25px;
             letter-spacing: 2px;
             text-align: center;
             z-index: 10;
+            line-height: 1;
         }
 
         .game-container {
@@ -172,6 +178,7 @@
             align-items: center;
             font-size: 28px; 
             font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Giữ nguyên font ô đáp án */
             color: transparent;
             text-transform: uppercase;
             transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
@@ -227,7 +234,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
 
-        /* Modal hiển thị câu hỏi */
+        /* Modal hiển thị câu hỏi - Đã được làm to và rõ hơn */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -241,60 +248,67 @@
         .modal {
             background: #fff;
             color: #333;
-            padding: 30px; 
+            padding: 40px 30px; /* Tăng padding */
             border-radius: 15px;
-            width: 90%;
-            max-width: 550px; 
+            width: 95%;
+            max-width: 700px; /* Bảng rộng hơn */
             text-align: center;
             border: 6px solid #a71d2a;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            /* Thêm họa tiết gấm nhạt vào bảng câu hỏi cho sang */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5H0V11h20V8.5H0V6h20V3.5H0V1h20V0h2v1h20v2.5H22V6h20v2.5H22V11h20v2.5H22V16h20v2H22v2.5h20V23h-20v2.5h20V28h-20v2.5h20V33h-20v2.5h20V38h-20v2H20v-2H0v-2.5h20V33H0v-2.5h20V28H0v-2.5h20V23H0v-2.5h20z' fill='%23a71d2a' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
         .modal h2 {
             margin-top: 0;
             color: #a71d2a;
-            font-size: 1.5rem;
+            font-size: 2.2rem; /* Chữ câu hỏi to rõ hơn */
             line-height: 1.5;
+            font-weight: 700;
         }
 
         .modal input {
             width: 90%;
-            padding: 12px;
-            font-size: 1.3rem;
-            margin: 20px 0;
+            padding: 18px; /* Tăng padding để thanh nhập to hơn */
+            font-size: 1.8rem; /* Chữ nhập vào to hơn */
+            margin: 25px 0;
             border: 3px solid #ccc;
             border-radius: 8px;
             text-align: center;
             text-transform: uppercase;
+            font-weight: bold;
         }
 
         .modal input:focus {
             border-color: #a71d2a;
             outline: none;
+            box-shadow: 0 0 10px rgba(167, 29, 42, 0.3);
         }
 
         .modal button {
             background: #f1c40f;
             color: #a71d2a;
             border: none;
-            padding: 12px 35px;
-            font-size: 1.2rem;
+            padding: 15px 40px; /* Nút bấm to hơn */
+            font-size: 1.5rem; /* Chữ nút bấm to hơn */
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.2s;
         }
 
         .modal button:hover {
             background: #e1b70d;
+            transform: scale(1.05);
         }
 
         .close-btn {
             background: #ccc !important;
             color: #333 !important;
-            margin-left: 15px;
+            margin-left: 20px;
+        }
+        
+        .close-btn:hover {
+            background: #bbb !important;
         }
 
         #toast {
@@ -320,13 +334,15 @@
         }
 
         .developer-link {
+            font-family: 'Dancing Script', cursive; /* Đồng bộ font viết tay */
             color: #f1c40f;
-            font-size: 1.2rem;
+            font-size: 2.5rem; /* Tăng size để match với title to */
             font-weight: bold;
             text-decoration: none;
             letter-spacing: 2px;
             display: inline-block;
             transition: transform 0.2s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .developer-link:hover {
@@ -345,7 +361,7 @@
 
     <!-- Màn hình chờ bắt buộc để kích hoạt Fullscreen -->
     <div id="startScreen">
-        <h1>MINIGAME</h1>
+        <h1>Minigame Môn Văn Hóa</h1>
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
@@ -357,7 +373,7 @@
         <div class="corner br"></div>
     </div>
 
-    <h1 class="game-title">Minigame</h1>
+    <h1 class="game-title">Minigame Môn Văn Hóa</h1>
 
     <div class="game-container">
         <!-- Khu vực bảng chữ -->
@@ -413,12 +429,19 @@
 
         document.getElementById("startBtn").addEventListener("click", function() {
             const elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { 
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { 
-                elem.msRequestFullscreen();
+            try {
+                if (elem.requestFullscreen) {
+                    const promise = elem.requestFullscreen();
+                    if (promise !== undefined) {
+                        promise.catch(err => console.warn("Tính năng Fullscreen bị chặn bởi iframe/trình duyệt:", err));
+                    }
+                } else if (elem.webkitRequestFullscreen) { 
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { 
+                    elem.msRequestFullscreen();
+                }
+            } catch (error) {
+                console.warn("Không thể kích hoạt Fullscreen:", error);
             }
             document.getElementById("startScreen").style.display = "none";
         });
@@ -487,7 +510,8 @@
             closeModal();
 
             if (userInput === correctAnswer) {
-                document.getElementById("audioDung").play();
+                // Play sound if you have dung.mp3
+                try { document.getElementById("audioDung").play(); } catch(e){}
                 
                 isSolved[currentRow] = true;
                 rowElement.classList.add("solved");
@@ -506,7 +530,8 @@
                 }
 
             } else {
-                document.getElementById("audioSai").play();
+                // Play sound if you have sai.mp3
+                try { document.getElementById("audioSai").play(); } catch(e){}
                 showToast("CÂU TRẢ LỜI SAI!");
                 
                 const paddedInput = userInput.padEnd(correctAnswer.length, ' ').substring(0, correctAnswer.length);
