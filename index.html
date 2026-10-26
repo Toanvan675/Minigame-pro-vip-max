@@ -7,7 +7,7 @@
     <style>
         /* Tùy chỉnh chủ đề Tết */
         body {
-            background-color: #a71d2a; /* Màu đỏ mận đậm chất Tết */
+            background-color: #a71d2a;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -18,7 +18,7 @@
         }
 
         h1 {
-            color: #f1c40f; /* Màu vàng mai/cúc */
+            color: #f1c40f;
             text-transform: uppercase;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             font-size: 2.5rem;
@@ -31,8 +31,9 @@
             flex-wrap: wrap;
             gap: 50px;
             justify-content: center;
-            align-items: flex-start;
-            max-width: 1000px;
+            align-items: stretch; /* Đổi thành stretch để cột ảnh cao bằng cột chữ */
+            max-width: 1100px;
+            width: 100%;
         }
 
         /* Bảng ô chữ */
@@ -44,7 +45,7 @@
 
         .row {
             display: grid;
-            grid-template-columns: repeat(10, 45px); /* 10 cột, mỗi cột 45px */
+            grid-template-columns: repeat(10, 45px);
             gap: 6px;
             cursor: pointer;
             transition: transform 0.2s;
@@ -65,39 +66,44 @@
             align-items: center;
             font-size: 24px;
             font-weight: bold;
-            color: transparent; /* Ẩn chữ lúc đầu */
+            color: transparent;
             text-transform: uppercase;
             transition: background-color 0.3s, border-color 0.3s, color 0.3s;
             box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
-        /* Cột dọc (mamnguqua) sẽ có màu nền nhạt để dễ nhận diện */
         .cell.highlight {
             background-color: rgba(241, 196, 15, 0.3);
             border-color: #ff9f43;
         }
 
-        /* Trạng thái đúng / sai */
         .cell.correct {
-            background-color: #2ecc71 !important; /* Xanh lá */
+            background-color: #2ecc71 !important;
             border-color: #27ae60 !important;
             color: #fff !important;
         }
 
         .cell.wrong {
-            background-color: #e74c3c !important; /* Đỏ */
+            background-color: #e74c3c !important;
             border-color: #c0392b !important;
             color: #fff !important;
         }
 
+        /* Cột chứa ảnh */
+        .image-container {
+            display: flex;
+            flex: 1; /* Cho phép cột ảnh chiếm hết không gian chiều ngang còn lại */
+            min-width: 300px; /* Đảm bảo trên điện thoại ảnh không bị bóp nhỏ quá */
+        }
+
         /* Ảnh bên cạnh */
         .image-container img {
-            width: 320px;
-            height: auto;
+            width: 100%;
+            height: 100%; /* Ép ảnh cao bằng 100% cột chứa nó */
+            object-fit: cover; /* Đảm bảo ảnh không bị méo tỉ lệ khi phóng to */
+            border: none; /* ĐÃ BỎ VIỀN */
             border-radius: 12px;
-            border: 4px solid #f1c40f;
             box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-            object-fit: cover;
         }
 
         /* Modal hiển thị câu hỏi */
@@ -162,14 +168,12 @@
             background: #e1b70d;
         }
 
-        /* Nút Close modal */
         .close-btn {
             background: #ccc !important;
             color: #333 !important;
             margin-left: 10px;
         }
 
-        /* Toast thông báo sai */
         #toast {
             position: fixed;
             bottom: 30px;
@@ -198,7 +202,7 @@
 
         <!-- Khu vực ảnh minh họa -->
         <div class="image-container">
-            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/320x450.png?text=Loi+anh+mamnguqua.jpg'">
+            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/400x500.png?text=Loi+anh+mamnguqua.jpg'">
         </div>
     </div>
 
@@ -221,7 +225,6 @@
     <audio id="audioSai" src="sai.mp3"></audio>
 
     <script>
-        // Dữ liệu câu hỏi, đáp án và offset (số ô trống thụt lề đầu dòng để cột 5 tạo thành chữ mamnguqua)
         const gameData = [
             { q: "1. A large green/yellow citrus fruit placed on the tray for good luck.", a: "pomelo", offset: 3 },
             { q: "2. A tropical fruit, its name sounds like 'enough' in the Southern dialect.", a: "papaya", offset: 4 },
@@ -235,9 +238,8 @@
         ];
 
         let currentRow = -1;
-        const TARGET_COL = 5; // Cột dọc tạo ra chữ MAMNGUQUA (index từ 0)
+        const TARGET_COL = 5;
 
-        // Khởi tạo bảng
         function initBoard() {
             const board = document.getElementById("board");
             
@@ -247,21 +249,17 @@
                 rowDiv.dataset.row = rowIndex;
                 rowDiv.onclick = () => openModal(rowIndex);
 
-                // Tổng số cột giả định là 10 để bao phủ toàn bộ độ dài các chữ
                 for (let col = 0; col < 10; col++) {
                     const cell = document.createElement("div");
                     
-                    // Nếu cột nằm trong phạm vi của từ khóa (từ offset đến offset + độ dài từ)
                     if (col >= item.offset && col < item.offset + item.a.length) {
                         cell.className = "cell";
                         if (col === TARGET_COL) {
                             cell.classList.add("highlight");
                             cell.dataset.highlight = "true";
                         }
-                        // Gán index chữ cái của ô này so với chuỗi đáp án
                         cell.dataset.charIndex = col - item.offset; 
                     } else {
-                        // Nếu không có chữ, làm ô ẩn vô hình để giữ cấu trúc grid
                         cell.style.visibility = "hidden";
                     }
                     rowDiv.appendChild(cell);
@@ -270,7 +268,6 @@
             });
         }
 
-        // Mở hộp thoại câu hỏi
         function openModal(rowIndex) {
             currentRow = rowIndex;
             document.getElementById("questionText").innerText = gameData[rowIndex].q;
@@ -284,7 +281,6 @@
             document.getElementById("modalOverlay").style.display = "none";
         }
 
-        // Nhấn Enter để trả lời
         document.getElementById("answerInput").addEventListener("keypress", function(e) {
             if (e.key === "Enter") checkAnswer();
         });
@@ -296,7 +292,6 @@
             setTimeout(() => { toast.style.display = "none"; }, 2500);
         }
 
-        // Kiểm tra kết quả và tạo hiệu ứng xuất hiện tuần tự
         function checkAnswer() {
             const userInput = document.getElementById("answerInput").value.trim().toLowerCase();
             const correctAnswer = gameData[currentRow].a.toLowerCase();
@@ -305,25 +300,21 @@
             closeModal();
 
             if (userInput === correctAnswer) {
-                // ĐÚNG
                 document.getElementById("audioDung").play();
                 
-                // Hiển thị chữ cái lần lượt màu xanh
                 cells.forEach((cell, index) => {
                     setTimeout(() => {
                         cell.innerText = correctAnswer[index];
                         cell.classList.remove("wrong");
                         cell.classList.add("correct");
-                    }, index * 200); // Mỗi chữ cách nhau 0.2s
+                    }, index * 200);
                 });
             } else {
-                // SAI
                 document.getElementById("audioSai").play();
                 showToast("CÂU TRẢ LỜI SAI!");
                 
                 const paddedInput = userInput.padEnd(correctAnswer.length, ' ').substring(0, correctAnswer.length);
 
-                // Hiển thị chữ cái lần lượt màu đỏ
                 cells.forEach((cell, index) => {
                     setTimeout(() => {
                         cell.innerText = paddedInput[index] !== ' ' ? paddedInput[index] : '?';
@@ -332,21 +323,19 @@
                     }, index * 200);
                 });
 
-                // Chữ tan biến (xóa text và màu) sau khi đã hiện xong toàn bộ
-                const fadeDelay = correctAnswer.length * 200 + 1000; // Đợi hiện xong + thêm 1 giây
+                const fadeDelay = correctAnswer.length * 200 + 1000;
                 
                 setTimeout(() => {
                     cells.forEach((cell, index) => {
                         setTimeout(() => {
                             cell.classList.remove("wrong");
-                            cell.innerText = ""; // Xóa chữ
-                        }, index * 150); // Tan biến lần lượt
+                            cell.innerText = "";
+                        }, index * 150);
                     });
                 }, fadeDelay);
             }
         }
 
-        // Chạy game khi load xong web
         window.onload = initBoard;
     </script>
 </body>
