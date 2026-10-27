@@ -30,51 +30,66 @@
             overflow: hidden;        
         }
 
-        /* KHUNG VIỀN VÀNG RỒNG PHƯỢNG (ROYAL FRAME) */
+        /* KHUNG VIỀN VÀNG RỒNG PHƯỢNG (ROYAL FRAME) ĐƯỢC LÀM UỐN LƯỢN */
         .royal-frame {
             position: fixed;
-            top: 15px; left: 15px; right: 15px; bottom: 15px;
-            border: 3px solid #f1c40f;
-            outline: 2px solid #f1c40f;
-            outline-offset: -8px;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
             pointer-events: none; /* Rất quan trọng: Không chặn click chuột vào game */
             z-index: 998;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.4), 0 0 20px rgba(0,0,0,0.5);
+            /* Đổ bóng sâu bên trong để làm nổi bật không gian chơi */
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.5);
+            border-radius: 20px;
+        }
+
+        /* Họa tiết dây mây, vảy rồng đan xen dọc theo 4 cạnh viền */
+        .royal-frame::before {
+            content: '';
+            position: absolute;
+            top: -15px; left: -15px; right: -15px; bottom: -15px;
+            pointer-events: none;
+            filter: drop-shadow(0 0 5px rgba(241, 196, 15, 0.8));
+            background: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='30'%3E%3Cpath d='M0,15 C20,30 40,0 60,15 C80,30 100,0 120,15' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M0,15 C20,0 40,30 60,15 C80,0 100,30 120,15' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='30' cy='15' r='5' fill='%23ff9f43'/%3E%3Ccircle cx='90' cy='15' r='5' fill='%23ff9f43'/%3E%3C/svg%3E") repeat-x top,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='30'%3E%3Cpath d='M0,15 C20,30 40,0 60,15 C80,30 100,0 120,15' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M0,15 C20,0 40,30 60,15 C80,0 100,30 120,15' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='30' cy='15' r='5' fill='%23ff9f43'/%3E%3Ccircle cx='90' cy='15' r='5' fill='%23ff9f43'/%3E%3C/svg%3E") repeat-x bottom,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='120'%3E%3Cpath d='M15,0 C30,20 0,40 15,60 C30,80 0,100 15,120' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M15,0 C0,20 30,40 15,60 C0,80 30,100 15,120' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='15' cy='30' r='5' fill='%23ff9f43'/%3E%3Ccircle cx='15' cy='90' r='5' fill='%23ff9f43'/%3E%3C/svg%3E") repeat-y left,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='120'%3E%3Cpath d='M15,0 C30,20 0,40 15,60 C30,80 0,100 15,120' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M15,0 C0,20 30,40 15,60 C0,80 30,100 15,120' fill='none' stroke='%23f1c40f' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='15' cy='30' r='5' fill='%23ff9f43'/%3E%3Ccircle cx='15' cy='90' r='5' fill='%23ff9f43'/%3E%3C/svg%3E") repeat-y right;
         }
 
         /* 4 Góc trang trí (Chỗ hiển thị rongphuong.png) */
         .corner {
             position: absolute;
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             background-image: url('rongphuong.png'); /* Sẵn sàng nhận file rongphuong.png của bạn */
             background-size: contain;
             background-repeat: no-repeat;
-            background-position: top left;
+            background-position: center;
             z-index: 999;
         }
 
-        /* Định vị & Lật đối xứng 4 góc */
-        .corner.tl { top: -5px; left: -5px; }
-        .corner.tr { top: -5px; right: -5px; transform: scaleX(-1); }
-        .corner.bl { bottom: -5px; left: -5px; transform: scaleY(-1); }
-        .corner.br { bottom: -5px; right: -5px; transform: scale(-1, -1); }
+        /* Định vị & Lật đối xứng 4 góc, điều chỉnh nhẹ để đè lên phần giao cắt của viền mây */
+        .corner.tl { top: -25px; left: -25px; }
+        .corner.tr { top: -25px; right: -25px; transform: scaleX(-1); }
+        .corner.bl { bottom: -25px; left: -25px; transform: scaleY(-1); }
+        .corner.br { bottom: -25px; right: -25px; transform: scale(-1, -1); }
 
-        /* Họa tiết góc mạ vàng bằng CSS (Hiển thị mượt mà kể cả khi chưa có ảnh rồng) */
+        /* Họa tiết khung phụ trợ mạ vàng uốn cong phía sau rồng phượng */
         .corner::before, .corner::after {
             content: '';
             position: absolute;
-            border-top: 5px solid #f1c40f;
-            border-left: 5px solid #f1c40f;
+            border-top: 4px solid #f1c40f;
+            border-left: 4px solid #f1c40f;
             box-shadow: -2px -2px 6px rgba(0,0,0,0.4);
+            border-top-left-radius: 20px; /* Uốn cong để phù hợp với viền lượn sóng */
         }
         .corner::before {
-            top: 0; left: 0;
+            top: 25px; left: 25px;
             width: 80px; height: 80px;
         }
         .corner::after {
-            top: 15px; left: 15px;
+            top: 40px; left: 40px;
             width: 40px; height: 40px;
+            border-top-left-radius: 12px;
         }
 
         /* Màn hình khởi động để yêu cầu Fullscreen */
@@ -90,8 +105,8 @@
         }
 
         #startScreen h1 {
-            font-family: 'Dancing Script', cursive; /* Đổi sang font viết tay */
-            font-size: clamp(4rem, 10vw, 8rem); /* Font to linh hoạt không tràn viền */
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(4rem, 10vw, 8rem);
             margin-bottom: 30px;
             text-align: center;
             padding: 0 20px;
@@ -117,18 +132,39 @@
             background: #e1b70d;
         }
 
-        h1.game-title {
-            font-family: 'Dancing Script', cursive; /* Đổi sang font viết tay */
-            color: #f1c40f;
-            text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
-            /* Tăng kích thước lên ~300% (từ 2.4rem lên max 7.5rem) bằng clamp để không rớt khỏi border */
-            font-size: clamp(4rem, 8vw, 7.5rem); 
-            margin-top: 10px;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
+        /* KHU VỰC TIÊU ĐỀ CHÍNH (Đã được nhóm lại để thêm dòng phụ) */
+        .title-wrapper {
             text-align: center;
             z-index: 10;
+            margin-top: 5px;
+            margin-bottom: 25px;
+        }
+
+        h1.game-title {
+            font-family: 'Dancing Script', cursive;
+            color: #f1c40f;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
+            font-size: clamp(4rem, 8vw, 7.5rem); 
+            margin: 0;
+            letter-spacing: 2px;
             line-height: 1;
+        }
+
+        /* Dòng chữ mời chọn câu hỏi */
+        h2.sub-title {
+            font-family: 'Dancing Script', cursive;
+            color: #ffd32a;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin: 5px 0 0 0;
+            font-weight: 400;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            letter-spacing: 1px;
+            animation: pulseSubText 2s infinite alternate;
+        }
+
+        @keyframes pulseSubText {
+            from { opacity: 0.7; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.05); }
         }
 
         .game-container {
@@ -178,7 +214,7 @@
             align-items: center;
             font-size: 28px; 
             font-weight: bold;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Giữ nguyên font ô đáp án */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: transparent;
             text-transform: uppercase;
             transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
@@ -234,7 +270,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
 
-        /* Modal hiển thị câu hỏi - Đã được làm to và rõ hơn */
+        /* Modal hiển thị câu hỏi */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -248,10 +284,10 @@
         .modal {
             background: #fff;
             color: #333;
-            padding: 40px 30px; /* Tăng padding */
+            padding: 40px 30px;
             border-radius: 15px;
             width: 95%;
-            max-width: 700px; /* Bảng rộng hơn */
+            max-width: 700px;
             text-align: center;
             border: 6px solid #a71d2a;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
@@ -261,15 +297,15 @@
         .modal h2 {
             margin-top: 0;
             color: #a71d2a;
-            font-size: 2.2rem; /* Chữ câu hỏi to rõ hơn */
+            font-size: 2.2rem;
             line-height: 1.5;
             font-weight: 700;
         }
 
         .modal input {
             width: 90%;
-            padding: 18px; /* Tăng padding để thanh nhập to hơn */
-            font-size: 1.8rem; /* Chữ nhập vào to hơn */
+            padding: 18px;
+            font-size: 1.8rem;
             margin: 25px 0;
             border: 3px solid #ccc;
             border-radius: 8px;
@@ -288,8 +324,8 @@
             background: #f1c40f;
             color: #a71d2a;
             border: none;
-            padding: 15px 40px; /* Nút bấm to hơn */
-            font-size: 1.5rem; /* Chữ nút bấm to hơn */
+            padding: 15px 40px;
+            font-size: 1.5rem;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
@@ -334,9 +370,9 @@
         }
 
         .developer-link {
-            font-family: 'Dancing Script', cursive; /* Đồng bộ font viết tay */
+            font-family: 'Dancing Script', cursive; 
             color: #f1c40f;
-            font-size: 2.5rem; /* Tăng size để match với title to */
+            font-size: 2.5rem; 
             font-weight: bold;
             text-decoration: none;
             letter-spacing: 2px;
@@ -365,7 +401,7 @@
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
-    <!-- Lớp viền mạ vàng & 4 góc Rồng Phượng -->
+    <!-- Lớp viền mạ vàng họa tiết rồng phượng uốn lượn -->
     <div class="royal-frame">
         <div class="corner tl"></div>
         <div class="corner tr"></div>
@@ -373,7 +409,11 @@
         <div class="corner br"></div>
     </div>
 
-    <h1 class="game-title">Minigame</h1>
+    <!-- Tiêu đề chính và dòng chữ mời gọi -->
+    <div class="title-wrapper">
+        <h1 class="game-title">Minigame</h1>
+        <h2 class="sub-title">~ Mời chọn câu hỏi ~</h2>
+    </div>
 
     <div class="game-container">
         <!-- Khu vực bảng chữ -->
@@ -510,7 +550,6 @@
             closeModal();
 
             if (userInput === correctAnswer) {
-                // Play sound if you have dung.mp3
                 try { document.getElementById("audioDung").play(); } catch(e){}
                 
                 isSolved[currentRow] = true;
@@ -530,7 +569,6 @@
                 }
 
             } else {
-                // Play sound if you have sai.mp3
                 try { document.getElementById("audioSai").play(); } catch(e){}
                 showToast("CÂU TRẢ LỜI SAI!");
                 
