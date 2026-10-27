@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame</title>
+    <title>Minigame (Very Easy)</title>
     <!-- Thư viện tạo hiệu ứng Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Import font chữ viết tay Dancing Script từ Google Fonts -->
@@ -297,10 +297,21 @@
 
         /* Cột chứa ảnh */
         .image-container {
-            display: flex;
+            display: none; /* Mặc định ẩn ảnh đi để bảng chữ đứng giữa */
             flex: 1;
             min-width: 320px; 
             max-width: 450px; 
+        }
+
+        /* Class thêm vào khi người chơi thắng */
+        .image-container.show {
+            display: flex;
+            animation: popInImage 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popInImage {
+            0% { opacity: 0; transform: scale(0.3) rotate(-10deg); filter: blur(5px); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
         }
 
         .image-container img {
@@ -439,7 +450,7 @@
 
     <!-- Màn hình chờ bắt buộc để kích hoạt Fullscreen -->
     <div id="startScreen">
-        <h1>Minigame</h1>
+        <h1>Minigame (Very Easy)</h1>
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
@@ -453,7 +464,7 @@
 
     <!-- Tiêu đề chính và dòng chữ mời gọi -->
     <div class="title-wrapper">
-        <h1 class="game-title">Minigame</h1>
+        <h1 class="game-title">Minigame (Very Easy)</h1>
         <h2 class="sub-title">~ Mời chọn câu hỏi ~</h2>
     </div>
 
@@ -461,8 +472,8 @@
         <!-- Khu vực bảng chữ -->
         <div class="board" id="board"></div>
 
-        <!-- Khu vực ảnh minh họa -->
-        <div class="image-container">
+        <!-- Khu vực ảnh minh họa (Đã thêm ID rewardImage) -->
+        <div class="image-container" id="rewardImage">
             <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/500x600.png?text=Loi+anh+mamnguqua.jpg'">
         </div>
     </div>
@@ -639,6 +650,9 @@
         }
 
         function triggerWin() {
+            // Hiển thị ảnh phần thưởng lên cùng lúc với hiệu ứng win
+            document.getElementById("rewardImage").classList.add("show");
+
             var duration = 3 * 1000;
             var end = Date.now() + duration;
 
