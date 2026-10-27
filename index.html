@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame (Very Easy)</title>
+    <title>Minigame (Very Obvious)</title>
     <!-- Thư viện tạo hiệu ứng Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Import font chữ viết tay Dancing Script từ Google Fonts -->
@@ -339,7 +339,7 @@
 
         /* Cột chứa ảnh */
         .image-container {
-            display: none; /* Mặc định ẩn ảnh đi để bảng chữ đứng giữa */
+            display: flex; /* Đổi từ none sang flex để hiển thị ngay từ đầu */
             flex: 1;
             min-width: 320px; 
             max-width: 450px; 
@@ -347,7 +347,6 @@
 
         /* Class thêm vào khi người chơi thắng */
         .image-container.show {
-            display: flex;
             animation: popInImage 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
@@ -489,16 +488,49 @@
             100% { color: #a8ffb2; text-shadow: 0 0 25px #2ecc71, 0 0 40px #2ecc71; }
         }
 
+        /* Nút thoát game ở góc */
+        .close-web-btn {
+            position: fixed;
+            top: 40px;
+            right: 180px; /* Dịch chuyển ra xa viền rồng phượng, tiến lại gần title */
+            width: 80px; /* Kích thước to gần gấp đôi */
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1); /* Xuyên thấu giống các ô vuông chữ */
+            color: #f1c40f;
+            border: 3px solid #f1c40f;
+            font-size: 38px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10005; /* Đảm bảo nổi trên cùng, kể cả start screen */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s, color 0.2s;
+        }
+
+        .close-web-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(241, 196, 15, 0.4); /* Sáng lên giống ô chữ đặc biệt khi trỏ chuột */
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.8);
+            color: #fff;
+        }
+
     </style>
 </head>
 <body>
 
+    <!-- Nút Dấu X Tự Động Đóng Web -->
+    <button id="closeWebBtn" class="close-web-btn" onclick="closeWebPage()" title="Đóng Trang">✖</button>
+
     <!-- Màn hình chờ bắt buộc để kích hoạt Fullscreen -->
     <div id="startScreen">
-        <h1>Minigame (Very Easy)</h1>
+        <h1>Minigame (Very Obvious)</h1>
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
+    <!-- Lớp viền mạ vàng họa tiết rồng phượng uốn lượn -->
     <!-- Lớp viền mạ vàng họa tiết rồng phượng uốn lượn -->
     <div class="royal-frame">
         <div class="corner tl"></div>
@@ -509,7 +541,7 @@
 
     <!-- Tiêu đề chính và dòng chữ mời gọi -->
     <div class="title-wrapper">
-        <h1 class="game-title">Minigame (Very Easy)</h1>
+        <h1 class="game-title">Minigame (Very Obvious)</h1>
         <h2 class="sub-title">~ Mời chọn câu hỏi ~</h2>
     </div>
 
@@ -567,6 +599,21 @@
     <audio id="audioWin" src="win.mp3"></audio>
 
     <script>
+        // Hàm đóng trang web
+        function closeWebPage() {
+            window.close(); // Thử đóng tab
+            
+            // Dự phòng nếu trình duyệt chặn window.close() (thường xảy ra nếu tab không do script mở)
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <div style="display:flex; justify-content:center; align-items:center; height:100vh; background-color:#a71d2a; color:#f1c40f; flex-direction:column; text-align:center;">
+                        <h1 style="font-family: 'Dancing Script', cursive; font-size: 4rem;">Đã thoát trò chơi!</h1>
+                        <p style="font-family: sans-serif; font-size: 1.5rem; margin-top: 10px;">Bạn có thể đóng tab trình duyệt này.</p>
+                    </div>
+                `;
+            }, 300);
+        }
+
         const gameData = [
             { q: "1. A large green/yellow citrus fruit placed on the tray for good luck.", a: "pomelo", offset: 3 },
             { q: "2. A tropical fruit, its name sounds like 'enough' in the Southern dialect.", a: "papaya", offset: 4 },
@@ -791,29 +838,25 @@
 
             document.getElementById("rewardImage").classList.add("show");
 
-            var duration = 3 * 1000;
-            var end = Date.now() + duration;
-
-            (function frame() {
+            // Confetti duy trì mãi mãi (Mỗi 250ms bắn 1 lần để tạo luồng liên tục)
+            setInterval(function() {
                 confetti({
-                    particleCount: 8,
+                    particleCount: 15,
                     angle: 60,
                     spread: 60,
                     origin: { x: 0 },
-                    colors: ['#f1c40f', '#a71d2a', '#2ecc71']
+                    colors: ['#f1c40f', '#a71d2a', '#2ecc71'],
+                    zIndex: 9999
                 });
                 confetti({
-                    particleCount: 8,
+                    particleCount: 15,
                     angle: 120,
                     spread: 60,
                     origin: { x: 1 },
-                    colors: ['#f1c40f', '#a71d2a', '#2ecc71']
+                    colors: ['#f1c40f', '#a71d2a', '#2ecc71'],
+                    zIndex: 9999
                 });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
+            }, 250);
 
             const highlightCells = document.querySelectorAll('.cell[data-highlight="true"]');
             highlightCells.forEach((cell, i) => {
