@@ -502,6 +502,7 @@
     <!-- Âm thanh -->
     <audio id="audioDung" src="dung.mp3"></audio>
     <audio id="audioSai" src="sai.mp3"></audio>
+    <audio id="audioWin" src="win.mp3"></audio>
 
     <script>
         const gameData = [
@@ -650,6 +651,9 @@
         }
 
         function triggerWin() {
+            // Phát âm thanh chiến thắng
+            try { document.getElementById("audioWin").play(); } catch(e){}
+
             // Hiển thị ảnh phần thưởng lên cùng lúc với hiệu ứng win
             document.getElementById("rewardImage").classList.add("show");
 
