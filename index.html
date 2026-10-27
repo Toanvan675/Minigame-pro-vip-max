@@ -167,6 +167,48 @@
             to { opacity: 1; transform: scale(1.05); }
         }
 
+        /* Khung bọc nút giải cứu ở phía dưới */
+        .action-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 35px;
+            z-index: 10;
+        }
+
+        /* Nút giải cứu ngẫu nhiên (Đã đồng bộ font viết tay, bo tròn mềm mại và màu sắc hoàng gia) */
+        .skip-btn {
+            padding: 12px 35px;
+            font-size: 1.8rem;
+            background: transparent;
+            color: #f1c40f;
+            border: 3px solid #f1c40f;
+            border-radius: 25px; /* Bo tròn lớn như viên thuốc hoàng gia */
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Dancing Script', cursive; /* Đồng bộ font viết tay */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 0 10px rgba(241,196,15,0.1);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .skip-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            background: #f1c40f;
+            color: #a71d2a;
+            box-shadow: 0 6px 20px rgba(241,196,15,0.5);
+        }
+
+        .skip-btn:disabled {
+            background: transparent;
+            color: #7f8c8d;
+            border-color: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
         .game-container {
             display: flex;
             flex-wrap: wrap;
@@ -323,7 +365,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
 
-        /* Modal hiển thị câu hỏi */
+        /* Modal hiển thị câu hỏi và mật khẩu */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -363,8 +405,11 @@
             border: 3px solid #ccc;
             border-radius: 8px;
             text-align: center;
-            text-transform: uppercase;
             font-weight: bold;
+        }
+        
+        #answerInput {
+            text-transform: uppercase;
         }
 
         .modal input:focus {
@@ -417,7 +462,7 @@
         }
 
         footer {
-            margin-top: 35px;
+            margin-top: 25px;
             text-align: center;
             z-index: 10;
         }
@@ -478,6 +523,12 @@
         </div>
     </div>
 
+    <!-- Khu vực nút tiện ích ở dưới cùng -->
+    <div class="action-wrapper">
+        <!-- Đã sửa onclick gọi hàm mở hộp thoại mật khẩu thay vì giải ngẫu nhiên ngay -->
+        <button id="skipBtn" class="skip-btn" onclick="promptSkipPassword()">Giải Cứu 1 Câu Ngẫu Nhiên</button>
+    </div>
+
     <!-- Hàng chữ Developer ở cuối trang -->
     <footer>
         <a href="https://www.facebook.com/toanvandepchai" target="_blank" class="developer-link">
@@ -495,8 +546,19 @@
             <button class="close-btn" onclick="closeModal()">ĐÓNG</button>
         </div>
     </div>
+    
+    <!-- Cửa sổ nổi yêu cầu mật mã để Giải Cứu -->
+    <div class="modal-overlay" id="passwordModalOverlay">
+        <div class="modal">
+            <h2>Nhập Mật Mã Giải Cứu</h2>
+            <input type="password" id="passwordInput" placeholder="Nhập mật mã..." autocomplete="off">
+            <br>
+            <button onclick="verifySkipPassword()">XÁC NHẬN</button>
+            <button class="close-btn" onclick="closePasswordModal()">ĐÓNG</button>
+        </div>
+    </div>
 
-    <!-- Thông báo sai -->
+    <!-- Thông báo trạng thái -->
     <div id="toast">CÂU TRẢ LỜI SAI!</div>
 
     <!-- Âm thanh -->
@@ -570,6 +632,9 @@
             });
         }
 
+        // ==========================
+        // KHU VỰC CÂU HỎI THƯỜNG
+        // ==========================
         function openModal(rowIndex) {
             if (isSolved[rowIndex]) return; 
 
@@ -650,11 +715,80 @@
             }
         }
 
+        // ==========================
+        // KHU VỰC GIẢI CỨU BẰNG MẬT MÃ
+        // ==========================
+        function promptSkipPassword() {
+            const passInput = document.getElementById("passwordInput");
+            passInput.value = "";
+            document.getElementById("passwordModalOverlay").style.display = "flex";
+            passInput.focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById("passwordModalOverlay").style.display = "none";
+        }
+
+        document.getElementById("passwordInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") verifySkipPassword();
+        });
+
+        function verifySkipPassword() {
+            const pass = document.getElementById("passwordInput").value;
+            if (pass === "6767") {
+                closePasswordModal();
+                executeSkipRandom();
+            } else {
+                try { document.getElementById("audioSai").play(); } catch(e){}
+                showToast("SAI MẬT MÃ!");
+                document.getElementById("passwordInput").value = "";
+                document.getElementById("passwordInput").focus();
+            }
+        }
+
+        function executeSkipRandom() {
+            const unsolvedIndices = [];
+            isSolved.forEach((solved, index) => {
+                if (!solved) unsolvedIndices.push(index);
+            });
+
+            if (unsolvedIndices.length === 0) return;
+
+            const randomIndex = unsolvedIndices[Math.floor(Math.random() * unsolvedIndices.length)];
+            const correctAnswer = gameData[randomIndex].a.toLowerCase();
+            const rowElement = document.getElementById(`row-${randomIndex}`);
+            const cells = rowElement.querySelectorAll('.cell');
+
+            try { document.getElementById("audioDung").play(); } catch(e){}
+            
+            isSolved[randomIndex] = true;
+            rowElement.classList.add("solved");
+
+            cells.forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.innerText = correctAnswer[index];
+                    cell.classList.remove("wrong");
+                    cell.classList.add("correct");
+                }, index * 200);
+            });
+
+            if (isSolved.every(status => status === true)) {
+                const skipBtn = document.getElementById("skipBtn");
+                if(skipBtn) skipBtn.disabled = true;
+                const timeToWait = correctAnswer.length * 200 + 500;
+                setTimeout(triggerWin, timeToWait);
+            }
+        }
+
+        // ==========================
+        // HIỆU ỨNG CHIẾN THẮNG
+        // ==========================
         function triggerWin() {
-            // Phát âm thanh chiến thắng
             try { document.getElementById("audioWin").play(); } catch(e){}
 
-            // Hiển thị ảnh phần thưởng lên cùng lúc với hiệu ứng win
+            const skipBtn = document.getElementById("skipBtn");
+            if(skipBtn) skipBtn.disabled = true;
+
             document.getElementById("rewardImage").classList.add("show");
 
             var duration = 3 * 1000;
