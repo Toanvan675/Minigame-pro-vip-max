@@ -27,7 +27,7 @@
             justify-content: center; 
             align-items: center;     
             min-height: 100vh;
-            overflow: hidden;        
+            overflow-x: hidden;        
         }
 
         /* KHUNG VIỀN VÀNG RỒNG PHƯỢNG (ROYAL FRAME) ĐƯỢC LÀM UỐN LƯỢN */
@@ -60,27 +60,26 @@
             position: absolute;
             width: 160px;
             height: 160px;
-            background-image: url('rongphuong.png'); /* Sẵn sàng nhận file rongphuong.png của bạn */
+            background-image: url('rongphuong.png'); 
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             z-index: 999;
         }
 
-        /* Định vị & Lật đối xứng 4 góc, điều chỉnh nhẹ để đè lên phần giao cắt của viền mây */
+        /* Định vị & Lật đối xứng 4 góc */
         .corner.tl { top: -25px; left: -25px; }
         .corner.tr { top: -25px; right: -25px; transform: scaleX(-1); }
         .corner.bl { bottom: -25px; left: -25px; transform: scaleY(-1); }
         .corner.br { bottom: -25px; right: -25px; transform: scale(-1, -1); }
 
-        /* Họa tiết khung phụ trợ mạ vàng uốn cong phía sau rồng phượng */
         .corner::before, .corner::after {
             content: '';
             position: absolute;
             border-top: 4px solid #f1c40f;
             border-left: 4px solid #f1c40f;
             box-shadow: -2px -2px 6px rgba(0,0,0,0.4);
-            border-top-left-radius: 20px; /* Uốn cong để phù hợp với viền lượn sóng */
+            border-top-left-radius: 20px;
         }
         .corner::before {
             top: 25px; left: 25px;
@@ -97,7 +96,7 @@
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #a71d2a;
-            z-index: 10000; /* Che toàn bộ viền */
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -132,7 +131,7 @@
             background: #e1b70d;
         }
 
-        /* KHU VỰC TIÊU ĐỀ CHÍNH (Đã được nhóm lại để thêm dòng phụ) */
+        /* KHU VỰC TIÊU ĐỀ CHÍNH */
         .title-wrapper {
             text-align: center;
             z-index: 10;
@@ -150,7 +149,6 @@
             line-height: 1;
         }
 
-        /* Dòng chữ mời chọn câu hỏi */
         h2.sub-title {
             font-family: 'Dancing Script', cursive;
             color: #ffd32a;
@@ -167,7 +165,6 @@
             to { opacity: 1; transform: scale(1.05); }
         }
 
-        /* Khung bọc nút giải cứu ở phía dưới */
         .action-wrapper {
             width: 100%;
             display: flex;
@@ -176,17 +173,16 @@
             z-index: 10;
         }
 
-        /* Nút giải cứu ngẫu nhiên (Đã đồng bộ font viết tay, bo tròn mềm mại và màu sắc hoàng gia) */
         .skip-btn {
             padding: 12px 35px;
             font-size: 1.8rem;
             background: transparent;
             color: #f1c40f;
             border: 3px solid #f1c40f;
-            border-radius: 25px; /* Bo tròn lớn như viên thuốc hoàng gia */
+            border-radius: 25px;
             cursor: pointer;
             font-weight: bold;
-            font-family: 'Dancing Script', cursive; /* Đồng bộ font viết tay */
+            font-family: 'Dancing Script', cursive;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 0 10px rgba(241,196,15,0.1);
             transition: all 0.3s ease;
             letter-spacing: 1px;
@@ -221,7 +217,6 @@
             z-index: 10;
         }
 
-        /* Bảng ô chữ */
         .board {
             display: flex;
             flex-direction: column;
@@ -234,40 +229,37 @@
             gap: 6px; 
             cursor: pointer;
             transition: transform 0.2s;
-            position: relative; /* Thêm để định vị mũi tên chọn */
+            position: relative;
         }
         
-        /* Số thứ tự câu hỏi luôn hiển thị cố định ở đầu hàng */
         .row::before {
             content: attr(data-num);
             position: absolute;
-            right: calc(100% + 10px); /* Ép sát mép trái của hàng, chỉ cách 10px */
+            right: calc(100% + 10px);
             top: 50%;
             transform: translateY(-50%);
-            font-size: 36px; /* Chữ viết tay nên để to hơn một chút cho dễ nhìn */
+            font-size: 36px;
             color: #f1c40f;
             font-weight: bold;
-            font-family: 'Dancing Script', cursive; /* Đổi sang font viết tay */
+            font-family: 'Dancing Script', cursive;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-            pointer-events: none; /* Tránh cản trở click chuột vào hàng */
+            pointer-events: none;
         }
 
-        /* Mũi tên nhấp nháy, mặc định ẩn đi */
         .row::after {
             content: "➤";
             position: absolute;
-            right: calc(100% + 35px); /* Nằm lùi ra ngoài số thứ tự */
+            right: calc(100% + 35px);
             top: 50%;
             transform: translateY(-50%);
             font-size: 1.4rem;
-            color: #2ecc71; /* Xanh lá cây nổi bật */
+            color: #2ecc71;
             font-weight: bold;
-            opacity: 0; /* Ẩn đi khi không hover */
+            opacity: 0; 
             pointer-events: none;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
         }
 
-        /* Khi di chuột vào hàng -> Mũi tên hiện ra và nhấp nháy chuyển động */
         .row:hover::after {
             opacity: 1;
             animation: blinkArrow 0.6s infinite alternate;
@@ -337,15 +329,41 @@
             to { box-shadow: 0 0 30px 10px rgba(241, 196, 15, 1) !important; }
         }
 
-        /* Cột chứa ảnh */
+        /* Cột chứa ảnh và gợi ý */
         .image-container {
-            display: flex; /* Đổi từ none sang flex để hiển thị ngay từ đầu */
+            display: flex;
+            flex-direction: column; /* Xếp dọc Gợi ý và Ảnh */
             flex: 1;
             min-width: 320px; 
             max-width: 450px; 
         }
 
-        /* Class thêm vào khi người chơi thắng */
+        /* ----- KHUNG GỢI Ý MỚI THÊM Ở TRÊN ẢNH ----- */
+        .hint-box {
+            background-color: rgba(139, 0, 0, 0.6);
+            border: 2px dashed #f1c40f;
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 15px rgba(241,196,15,0.1);
+            position: relative;
+            transition: all 0.3s;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: #f1c40f;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+        }
+        
+        .hint-box:hover {
+            background-color: rgba(139, 0, 0, 0.8);
+            border: 2px solid #f1c40f;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(241,196,15,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Hiệu ứng của ảnh khi chiến thắng */
         .image-container.show {
             animation: popInImage 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -357,9 +375,10 @@
 
         .image-container img {
             width: 100%;
-            height: 100%;
+            height: auto;
+            max-height: 400px;
             object-fit: cover;
-            border: none;
+            border: 3px solid #f1c40f;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
@@ -488,15 +507,14 @@
             100% { color: #a8ffb2; text-shadow: 0 0 25px #2ecc71, 0 0 40px #2ecc71; }
         }
 
-        /* Nút thoát game ở góc */
         .close-web-btn {
             position: fixed;
             top: 40px;
-            right: 180px; /* Dịch chuyển ra xa viền rồng phượng, tiến lại gần title */
-            width: 80px; /* Kích thước to gần gấp đôi */
+            right: 180px; 
+            width: 80px; 
             height: 80px;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1); /* Xuyên thấu giống các ô vuông chữ */
+            background-color: rgba(255, 255, 255, 0.1); 
             color: #f1c40f;
             border: 3px solid #f1c40f;
             font-size: 38px;
@@ -505,14 +523,14 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 10005; /* Đảm bảo nổi trên cùng, kể cả start screen */
+            z-index: 10005; 
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s, color 0.2s;
         }
 
         .close-web-btn:hover {
             transform: scale(1.1);
-            background-color: rgba(241, 196, 15, 0.4); /* Sáng lên giống ô chữ đặc biệt khi trỏ chuột */
+            background-color: rgba(241, 196, 15, 0.4); 
             box-shadow: 0 0 15px rgba(241, 196, 15, 0.8);
             color: #fff;
         }
@@ -529,7 +547,6 @@
         <button id="startBtn">Bắt Đầu Chơi</button>
     </div>
 
-    <!-- Lớp viền mạ vàng họa tiết rồng phượng uốn lượn -->
     <!-- Lớp viền mạ vàng họa tiết rồng phượng uốn lượn -->
     <div class="royal-frame">
         <div class="corner tl"></div>
@@ -548,15 +565,20 @@
         <!-- Khu vực bảng chữ -->
         <div class="board" id="board"></div>
 
-        <!-- Khu vực ảnh minh họa (Đã thêm ID rewardImage) -->
+        <!-- Khu vực ảnh minh họa và Khung Gợi Ý -->
         <div class="image-container" id="rewardImage">
-            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://via.placeholder.com/500x600.png?text=Loi+anh+mamnguqua.jpg'">
+            
+            <!-- KHUNG GỢI Ý ĐƯỢC THÊM MỚI Ở ĐÂY -->
+            <div class="hint-box">
+                Gợi ý
+            </div>
+            
+            <img src="mamnguqua.jpg" alt="Mâm Ngũ Quả" onerror="this.src='https://placehold.co/400x500/901622/f1c40f?text=M%C3%A2m+Ng%C5%A9+Qu%E1%BA%A3'">
         </div>
     </div>
 
     <!-- Khu vực nút tiện ích ở dưới cùng -->
     <div class="action-wrapper">
-        <!-- Đã sửa onclick gọi hàm mở hộp thoại mật khẩu thay vì giải ngẫu nhiên ngay -->
         <button id="skipBtn" class="skip-btn" onclick="promptSkipPassword()">Giải Cứu 1 Câu Ngẫu Nhiên</button>
     </div>
 
@@ -600,9 +622,8 @@
     <script>
         // Hàm đóng trang web
         function closeWebPage() {
-            window.close(); // Thử đóng tab
+            window.close(); 
             
-            // Dự phòng nếu trình duyệt chặn window.close() (thường xảy ra nếu tab không do script mở)
             setTimeout(() => {
                 document.body.innerHTML = `
                     <div style="display:flex; justify-content:center; align-items:center; height:100vh; background-color:#a71d2a; color:#f1c40f; flex-direction:column; text-align:center;">
@@ -656,7 +677,7 @@
                 rowDiv.className = "row";
                 rowDiv.id = `row-${rowIndex}`;
                 rowDiv.dataset.row = rowIndex;
-                rowDiv.dataset.num = rowIndex + 1; /* Cung cấp số thứ tự câu hỏi cho CSS đọc */
+                rowDiv.dataset.num = rowIndex + 1; 
                 rowDiv.onclick = () => openModal(rowIndex);
 
                 for (let col = 0; col < 10; col++) {
@@ -837,7 +858,7 @@
 
             document.getElementById("rewardImage").classList.add("show");
 
-            // Confetti duy trì mãi mãi (Mỗi 250ms bắn 1 lần để tạo luồng liên tục)
+            // Confetti duy trì mãi mãi
             setInterval(function() {
                 confetti({
                     particleCount: 15,
