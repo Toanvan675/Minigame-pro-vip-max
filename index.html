@@ -114,21 +114,25 @@
 
         #startBtn {
             padding: 20px 50px;
-            font-size: 1.8rem;
-            background: #f1c40f;
-            color: #a71d2a;
-            border: 4px solid #fff;
-            border-radius: 15px;
+            font-size: 3.5rem; /* Tăng cỡ chữ cho font viết tay */
+            background-color: rgba(139, 0, 0, 0.6);
+            border: 2px dashed #f1c40f;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            transition: transform 0.2s, background 0.2s;
-            text-transform: uppercase;
+            font-family: 'Dancing Script', cursive;
+            color: #f1c40f;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 15px rgba(241,196,15,0.1);
+            transition: all 0.3s;
         }
 
         #startBtn:hover {
-            transform: scale(1.05);
-            background: #e1b70d;
+            background-color: rgba(139, 0, 0, 0.8);
+            border: 2px solid #f1c40f;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(241,196,15,0.2);
+            transform: translateY(-3px) scale(1.05);
         }
 
         /* KHU VỰC TIÊU ĐỀ CHÍNH */
@@ -175,34 +179,35 @@
 
         .skip-btn {
             padding: 12px 35px;
-            font-size: 1.8rem;
-            background: transparent;
-            color: #f1c40f;
-            border: 3px solid #f1c40f;
-            border-radius: 25px;
+            font-size: 2.2rem;
+            background-color: rgba(139, 0, 0, 0.6);
+            border: 2px dashed #f1c40f;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
             font-family: 'Dancing Script', cursive;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 0 10px rgba(241,196,15,0.1);
+            color: #f1c40f;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 15px rgba(241,196,15,0.1);
             transition: all 0.3s ease;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
         .skip-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-            background: #f1c40f;
-            color: #a71d2a;
-            box-shadow: 0 6px 20px rgba(241,196,15,0.5);
+            background-color: rgba(139, 0, 0, 0.8);
+            border: 2px solid #f1c40f;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(241,196,15,0.2);
+            transform: translateY(-2px);
         }
 
         .skip-btn:disabled {
-            background: transparent;
-            color: #7f8c8d;
-            border-color: #7f8c8d;
+            background-color: rgba(100, 100, 100, 0.5);
+            color: #ccc;
+            border-color: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
-            opacity: 0.7;
+            text-shadow: none;
         }
 
         .game-container {
@@ -437,30 +442,39 @@
         }
 
         .modal button {
-            background: #f1c40f;
-            color: #a71d2a;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 12px 35px;
+            margin: 5px;
+            font-size: 2rem;
+            background-color: rgba(139, 0, 0, 0.8); /* Đậm hơn chút vì nổi trên nền trắng của Modal */
+            border: 2px dashed #f1c40f;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
+            font-weight: bold;
+            font-family: 'Dancing Script', cursive;
+            color: #f1c40f;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 0 10px rgba(241,196,15,0.1);
+            transition: all 0.3s;
+            letter-spacing: 2px;
         }
 
         .modal button:hover {
-            background: #e1b70d;
-            transform: scale(1.05);
+            background-color: #a71d2a;
+            border: 2px solid #f1c40f;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 15px rgba(241,196,15,0.2);
+            transform: translateY(-2px);
         }
 
         .close-btn {
-            background: #ccc !important;
-            color: #333 !important;
-            margin-left: 20px;
+            background-color: rgba(100, 100, 100, 0.8) !important;
+            border-color: #ccc !important;
+            color: #fff !important;
+            margin-left: 10px;
         }
         
         .close-btn:hover {
-            background: #bbb !important;
+            background-color: rgba(120, 120, 120, 1) !important;
+            border: 2px solid #fff !important;
         }
 
         #toast {
